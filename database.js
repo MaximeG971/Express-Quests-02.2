@@ -22,7 +22,7 @@ database
 database
   .query("select * from users")
   .then(([users]) => {
-    res.json(users);
+    console.log(users);
   })
   .catch((err) => {
     console.error(err);
