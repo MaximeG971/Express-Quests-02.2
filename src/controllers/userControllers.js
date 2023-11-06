@@ -52,14 +52,30 @@ const users = [
 const database = require("../../database");
 
 const getUsers = (req, res) => {
+  let sqlUsers = "select * from users";
+  const sqlUserValues = [];
+
+  if (req.query.language != null) {
+    sqlUsers += " where language = ?";
+    sqlUserValues.push(req.query.language);
+
+    if (req.query.city != null) {
+      sqlUsers += " and city = ?";
+      sqlUserValues.push(req.query.city);
+    }
+  } else if (req.query.city != null) {
+    sqlUsers += " where city = ?";
+    sqlUserValues.push(req.query.city);
+  }
+
   database
-    .query("select * from users")
+    .query(sqlUsers, sqlUserValues)
     .then(([users]) => {
       res.json(users);
     })
     .catch((err) => {
       console.error(err);
-      res.sendStatus(500);
+      res.status(500).send("Error retrieving data from database");
     });
 };
 
