@@ -1,6 +1,7 @@
 require("dotenv").config();
-
 const express = require("express");
+const validateMovie = require("./middlewares/validateMovie");
+const validateUser = require("./middlewares/validateUser");
 
 const app = express();
 

@@ -1,5 +1,6 @@
 const request = require("supertest");
 const crypto = require("node:crypto");
+const database = require("../database");
 
 const app = require("../src/app");
 
@@ -77,7 +78,7 @@ describe("POST /api/users", () => {
       .post("/api/users")
       .send(userWithMissingProps);
 
-    expect(response.status).toEqual(500);
+    expect(response.status).toEqual(422);
   });
 });
 
@@ -90,7 +91,7 @@ describe("PUT /api/users/:id", () => {
       city: "Los Angeles",
       language: "English",
     };
-    const [result] = await database.query(
+    const [resultSelect] = await database.query(
       "INSERT INTO users(firstname, lastname, email, city, languaeg) VALUES (?, ?, ?, ?, ?)",
       [
         newUser.firstname,
@@ -118,7 +119,7 @@ describe("PUT /api/users/:id", () => {
     expect(response.status).toEqual(204);
     const [result] = await database.query("SELECT * FROM users WHERE id=?", id);
 
-    const [userInDatabase] = result;
+    const [userInDatabase] = resultSelect;
 
     expect(userInDatabase).toHaveProperty("id");
 
@@ -145,7 +146,7 @@ describe("PUT /api/users/:id", () => {
       .put(`/api/users/1`)
       .send(movieWithMissingProps);
 
-    expect(response.status).toEqual(500);
+    expect(response.status).toEqual(422);
   });
   it("should return no user", async () => {
     const newMovie = {
